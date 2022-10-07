@@ -24,6 +24,7 @@ int productosNoEmpacados = 0;
 bool disponibilidad = false;
 int cantJuguetes = 0;
 int materiaAproducir = 0;
+int cantCamiones = 0;
 
 //inicialización del mutex
 pthread_mutex_t candado = PTHREAD_MUTEX_INITIALIZER;
@@ -133,7 +134,21 @@ void* distribucion (void* arg){
     cout << "Distribucion de juguetes iniciada, a alegrar la Navidad de muchos ninos!" << endl;
     cout << "---------------------------------------------------"<< endl;
 
-    //se distribuiran los juguetes mientras la cantidad de juguetes emp
+    //se distribuiran los juguetes mientras la cantidad de juguetes empacados sea mayor a 0 y dependiendo de la cantidad de juguetes que se pidieron
+    while(productosEmpacados > 0 && cantJuguetes >= 10 ) {
+
+        //duerme el hilo por 1 segundo
+        sleep(2);
+
+        //bloqueo de semaforo
+        sem_wait(&semJuguetesEmbalados)
+
+        cantCamiones = cantJuguetes/10;
+
+        //pendiente calculo de cuantos paquetes por camion
+
+    }
+
 
 }
 
