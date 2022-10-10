@@ -168,7 +168,18 @@ int main(){
     cout << "Bienvenido a Santa's Factory S.A" << endl;
     cout << "Ingrese la cantidad de juguetes que desea: " << endl;
     cout<<"---------------------------------------------------"<< endl;
-    cin >> cantJuguetes;
+    cout << "Jueguetes pequenios: " << endl;
+    cout<<"---------------------------------------------------"<< endl;
+    cin >> juguetesSmall;
+
+    cout << "Jueguetes medianos: " << endl;
+    cout<<"---------------------------------------------------"<< endl;
+    cin >> juguetesMedium;
+
+    cout << "Jueguetes grandes: " << endl;
+    cout<<"---------------------------------------------------"<< endl;
+    cin >> juguetesLarge;
+
 
     int n = cantJuguetes/5;
     pthread_t threads[n];
@@ -220,7 +231,6 @@ int main(){
     for (int i = 0; i < n; i++){
         pthread_join(threads[i], NULL);
     }
-    
     
     return 0;
 }
