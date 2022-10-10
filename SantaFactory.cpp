@@ -16,14 +16,38 @@ Proyecto 02 - Santa's Factory // Laboratorio 5
 #include <cmath>
 using namespace std;
 
-//Variables globales    
-int materiaPrima = 0;
-int juguetesProducidos = 0;
-int productosEmpacados = 0;
-int productosNoEmpacados = 0;
-bool disponibilidad = false;
-int cantJuguetes = 0;
-int materiaAproducir = 0;
+//Variables globales  
+struct cantJuguetes
+{
+    int juguetesPlastico = 0;
+    int juguetesMadera = 0;
+    int juguetesMetal = 0;
+};
+
+struct materiaPrima
+{
+    int materiaPlasticoTotal = 0;
+    int materiaPlastico = 0;
+    int materiaMaderaTotal = 0;
+    int materiaMadera = 0;
+    int materiaMetalTotal = 0;
+    int materiaMetal = 0;
+};
+
+struct juguetesFabricados
+{
+    int juguetesFabricadosPlastico = 0;
+    int juguetesFabricadosMadera = 0;
+    int juguetesFabricadosMetal = 0;
+};
+
+struct juguetesEmbalados{
+    int juguetesEmbaladosPlastico = 0;
+    int juguetesEmbaladosMadera = 0;
+    int juguetesEmbaladosMetal = 0;
+};
+
+
 int cantCamiones = 0;
 
 //inicialización del mutex
@@ -164,21 +188,24 @@ void* distribucion (void* arg){
 
 int main(){
     
+    cantJuguetes cantJuguetes;
+    
+    
     cout<<"---------------------------------------------------"<< endl;
     cout << "Bienvenido a Santa's Factory S.A" << endl;
     cout << "Ingrese la cantidad de juguetes que desea: " << endl;
     cout<<"---------------------------------------------------"<< endl;
-    cout << "Jueguetes pequenios: " << endl;
+    cout << "Jueguetes de plastico: " << endl;
     cout<<"---------------------------------------------------"<< endl;
-    cin >> juguetesSmall;
+    cin >> cantJuguetes.juguetesPlastico;
 
-    cout << "Jueguetes medianos: " << endl;
+    cout << "Jueguetes de madera: " << endl;
     cout<<"---------------------------------------------------"<< endl;
-    cin >> juguetesMedium;
+    cin >> cantJuguetes.juguetesMadera;
 
-    cout << "Jueguetes grandes: " << endl;
+    cout << "Jueguetes de metal: " << endl;
     cout<<"---------------------------------------------------"<< endl;
-    cin >> juguetesLarge;
+    cin >> cantJuguetes.juguetesMetal;
 
 
     int n = cantJuguetes/5;
