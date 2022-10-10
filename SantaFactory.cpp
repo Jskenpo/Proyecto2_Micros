@@ -40,8 +40,10 @@ sem_t semJuguetesEmbalados;
 //cada juguete costara 5 unidades de materia prima
 void* funMateriaPrima (void* arg){
 
+    int *id = (int *)arg;
+
     cout<<"---------------------------------------------------"<< endl;
-    cout << "Se empezo la produccion de materia prima" << endl;
+    cout << "El hilo " << *id << " empezo la produccion de materia prima" << endl;
     cout<<"---------------------------------------------------"<< endl;
 
     while(materiaPrima < materiaAproducir){
@@ -62,8 +64,10 @@ void* funMateriaPrima (void* arg){
 //30% de los hilos creados
 void* produccion (void* arg){
 
+    int *id = (int *)arg;
+
     cout<<"---------------------------------------------------"<< endl;
-    cout << "Se empezo la produccion de Juguetes" << endl;
+    cout << "El hilo "<< *id <<" empezo la produccion de Juguetes" << endl;
     cout<<"---------------------------------------------------"<< endl;
     
     //verifica la cantidad minima de materia prima creada para empezara producir juguetes
@@ -98,8 +102,11 @@ void* produccion (void* arg){
 
 //20% de los hilos creados
 void* embalaje (void* arg){
+
+    int *id = (int *)arg;
+
     cout << "---------------------------------------------------"<< endl;
-    cout << "Se empezo el embalaje de Juguetes" << endl;
+    cout <<"El hilo "<< *id << " empezo el embalaje de Juguetes" << endl;
     cout << "---------------------------------------------------"<< endl;
 
     
@@ -129,9 +136,11 @@ void* embalaje (void* arg){
 
 //10% de los hilos creados
 void* distribucion (void* arg){
+
+    int *id = (int *)arg;
     
     cout << "---------------------------------------------------"<< endl;
-    cout << "Distribucion de juguetes iniciada, a alegrar la Navidad de muchos ninos!" << endl;
+    cout << "El hilo " << *id << " empezo a distribuir los juguetes" << endl << "--- A alegrar la Navidad de muchos ninos! ---" << endl;
     cout << "---------------------------------------------------"<< endl;
 
     //se distribuiran los juguetes mientras la cantidad de juguetes empacados sea mayor a 0 y dependiendo de la cantidad de juguetes que se pidieron
@@ -141,7 +150,7 @@ void* distribucion (void* arg){
         sleep(2);
 
         //bloqueo de semaforo
-        sem_wait(&semJuguetesEmbalados)
+        sem_wait(&semJuguetesEmbalados);
 
         cantCamiones = cantJuguetes/10;
 
@@ -161,7 +170,7 @@ int main(){
     cout<<"---------------------------------------------------"<< endl;
     cin >> cantJuguetes;
 
-    int n = cantJuguetes;
+    int n = cantJuguetes/5;
     pthread_t threads[n];
 
     int hilosFunMateriaPrima = n * 0.4;
@@ -176,32 +185,36 @@ int main(){
 
     //creacion de hilos
     for (int i = 0; i < hilosFunMateriaPrima; i++){
-        pthread_create(&threads[i], NULL, funMateriaPrima, NULL);
-        usleep(100);  
+        int id = i;
+        pthread_create(&threads[i], NULL, funMateriaPrima, (void*)&id);
+        usleep(1000); 
     }
     
-    usleep(10);
+    sleep(3);
 
     for (int i = hilosFunMateriaPrima; i < hilosFunMateriaPrima + hilosProduccion; i++){
-        pthread_create(&threads[i], NULL, produccion, NULL);
-        usleep(100);
+        int id = i;
+        pthread_create(&threads[i], NULL, produccion, (void*)&id);
+        usleep(1000);
     }
 
-    usleep(10);
+    sleep(3);
 
     for (int i = hilosFunMateriaPrima + hilosProduccion; i < hilosFunMateriaPrima + hilosProduccion + hilosEmbalaje; i++){
-        pthread_create(&threads[i], NULL, embalaje, NULL);
-        usleep(100);
+        int id = i;
+        pthread_create(&threads[i], NULL, embalaje, (void*)&id);
+        usleep(1000);
     }
 
-    usleep(10);
+    sleep(3);
     
     for (int i = hilosFunMateriaPrima + hilosProduccion + hilosEmbalaje; i < hilosFunMateriaPrima + hilosProduccion + hilosEmbalaje + hilosDistribucion; i++){
-        pthread_create(&threads[i], NULL, distribucion, NULL);
-        usleep(100);
+        int id = i;
+        pthread_create(&threads[i], NULL, distribucion, (void*)&id);
+        usleep(1000);
     }
 
-    usleep(10);
+    sleep(3);
 
     //espera a que los hilos terminen
     for (int i = 0; i < n; i++){
