@@ -56,7 +56,7 @@ struct tallerSanta
 
     //Distribucion
     int cantCamiones = 0;
-    int cajasPorCamion = 0;
+    int cantJuguetes = 0;
 };
 
 
@@ -64,6 +64,7 @@ struct tallerSanta
 pthread_mutex_t candado = PTHREAD_MUTEX_INITIALIZER;
 bool exactpartition = true;
 
+//Semaforos
 sem_t semmateriaPrima;
 sem_t semJuguetesProducidos;
 sem_t semJuguetesEmbalados;
@@ -83,19 +84,19 @@ void* funMateriaPrima (void* arg){
     cout<<"---------------------------------------------------"<< endl;
     
 
-
-    int hilos = taller->hilosFunMateriaPrimas/3; //Se define que cantidad de hilos debe trabajar cada material
+    //Se define que cantidad de hilos debe trabajar cada material
+    int hilos = taller->hilosFunMateriaPrimas/3; 
 
     if(id < hilos){ //se tabaja para los hilos desde 0 hasta hilos
         while(taller->materiaPlasticoProducida < taller->materiaPlasticoTotal){ //mientras la materia prima de plastico sea menor a la total se seguira aumentando la materia prima
         //se utiliza una variable aparte de la que se toma el material para no generar un bucle infinito de produccion
         
-            sleep(2);
+            sleep(1);
         
             //bloqueo de semaforo
             sem_wait(&semmateriaPrima);
-            taller->materiaPlastico ++; //se aumenta la cantidad de materia prima
-            taller->materiaPlasticoProducida++; 
+            taller->materiaPlastico = taller->materiaPlastico + 1; //se aumenta la cantidad de materia prima
+            taller->materiaPlasticoProducida = taller->materiaPlasticoProducida + 1;
             
             //desbloqueo de semaforo
             sem_post(&semmateriaPrima);
@@ -105,12 +106,12 @@ void* funMateriaPrima (void* arg){
     else if(id >= hilos && id < hilos*2){ //se trabaja para los hilos desde hilos hasta hilos*2
         while(taller->materiaMaderaProducida < taller->materiaMaderaTotal){
         
-            sleep(4);
+            sleep(1);
         
             //bloqueo de semaforo
             sem_wait(&semmateriaPrima);
-            taller->materiaMadera ++; //se aumenta la cantidad de materia prima
-            taller->materiaMaderaProducida++;
+            taller->materiaMadera = taller->materiaMadera +1; //se aumenta la cantidad de materia prima
+            taller->materiaMaderaProducida = taller->materiaMaderaProducida + 1;
             
             //desbloqueo de semaforo
             sem_post(&semmateriaPrima);
@@ -120,12 +121,12 @@ void* funMateriaPrima (void* arg){
 
         while(taller->materiaMetalProducida < taller->materiaMetalTotal){
         
-            sleep(6);
+            sleep(1);
         
             //bloqueo de semaforo
             sem_wait(&semmateriaPrima);
-            taller->materiaMetal ++; //se aumenta la cantidad de materia
-            taller->materiaMetalProducida++;
+            taller->materiaMetal = taller->materiaMetal + 1; //se aumenta la cantidad de materia
+            taller->materiaMetalProducida = taller->materiaMetalProducida + 1;
             
             //desbloqueo de semaforo
             sem_post(&semmateriaPrima);
@@ -152,55 +153,91 @@ void* produccion (void* arg){
     int limiteSuperior = taller->hilosProduccion + limiteinferior;
     int hilos = taller->hilosProduccion/3; //Se define que cantidad de hilos debe trabajar cada material
 
-    //este deben usar QUITEN ESTE COMENTARIO
-    /*if(limiteinferior <= id && id < limiteinferior + hilos){
-        while(){
-        
+    
+    if(limiteinferior <= id && id < limiteinferior + hilos){
+
+        while(taller->materiaPlastico >= 5 ){
             
-        }
-        
+            //duerme el hilo por 1 segundos
+            sleep(1);
+
+            //bloqueo de semaforo materia prima
+            sem_wait(&semmateriaPrima);
+
+            //resta de materia prima
+            taller->materiaPlastico = taller->materiaPlastico-5;
+
+            //desbloqueo de semaforo materia prima
+            sem_post(&semmateriaPrima);
+
+
+            //bloqueo de semaforo juguetes Producidos
+            sem_wait(&semJuguetesProducidos);
+
+            //creación del juguete
+            taller->juguetesFabricadosPlastico ++;
+
+            //desbloqueo de semaforo juguetes Producidos
+            sem_post(&semJuguetesProducidos);         
+            
+        }        
     }
     else if(limiteinferior + hilos <= id && id < limiteinferior + hilos*2){
-        while(){
-        
 
+        while(taller->materiaMadera >= 5 ){
+            
+            //duerme el hilo por 1 segundos
+            sleep(1);
+
+            //bloqueo de semaforo materia prima
+            sem_wait(&semmateriaPrima);
+
+            //resta de materia prima
+            taller->materiaMadera = taller->materiaMadera-5;
+
+            //desbloqueo de semaforo materia prima
+            sem_post(&semmateriaPrima);
+
+
+            //bloqueo de semaforo juguetes Producidos
+            sem_wait(&semJuguetesProducidos);
+
+            //creación del juguete
+            taller->juguetesFabricadosMadera ++;
+
+            //desbloqueo de semaforo juguetes Producidos
+            sem_post(&semJuguetesProducidos);         
+            
         }
     }
     else if(limiteinferior + hilos*2 <= id && id < limiteSuperior){
 
-        while(){
-        
+        while(taller->materiaMetal >= 5 ){
+            
+            //duerme el hilo por 1 segundos
+            sleep(1);
+
+            //bloqueo de semaforo materia prima
+            sem_wait(&semmateriaPrima);
+
+            //resta de materia prima
+            taller->materiaMetal = taller->materiaMetal-5;
+
+            //desbloqueo de semaforo materia prima
+            sem_post(&semmateriaPrima);
+
+
+            //bloqueo de semaforo juguetes Producidos
+            sem_wait(&semJuguetesProducidos);
+
+            //creación del juguete
+            taller->juguetesFabricadosMetal ++;
+
+            //desbloqueo de semaforo juguetes Producidos
+            sem_post(&semJuguetesProducidos);         
             
         }
-    }*/
-    
-    /*//verifica la cantidad minima de materia prima creada para empezara producir juguetes
-    while(materiaPrima >=5){
-
-        //duerme el hilo por 3 segundos
-        sleep(3);
-
-        //bloqueo de semaforo
-        sem_wait(&semmateriaPrima);
-        // Se resta la maetria prima utilizada
-        materiaPrima = materiaPrima - 5;
-        
-        //desbloqueo de semaforo
-        sem_post(&semmateriaPrima);
-
-        //bloqueo de semaforo
-        sem_wait(&semJuguetesProducidos);
-        
-        // Crea un juguete
-        juguetesProducidos ++;
-
-        //desbloqueo de semaforo
-        sem_post(&semJuguetesEmbalados);
-
-        
-
-    }*/
-
+    }
     return 0;
 }
 
@@ -221,8 +258,8 @@ void* embalaje (void* arg){
     int limiteSuperior = taller->hilosEmbalaje + limiteinferior;
     int hilos = taller->hilosEmbalaje/3; //Se define que cantidad de hilos debe trabajar cada material
 
-    //este deben usar QUITEN ESTE COMENTARIO
-    /*if(limiteinferior <= id && id < limiteinferior + hilos){
+    /*
+    if(limiteinferior <= id && id < limiteinferior + hilos){
         while(){
         
             
@@ -277,8 +314,8 @@ void* distribucion (void* arg){
 
     //Importar variables de la struct
     int cantCamiones;
-    int cajas = taller->cajasPorCamion;
-    int cantJuguetes = taller->juguetesEmbaladosPlastico + taller->juguetesEmbaladosMadera + taller->juguetesEmbaladosMetal;
+    int cajasPorCamion = 10;
+    int cantJuguetes = taller->cantJuguetes;
 
 
     cout << "---------------------------------------------------"<< endl;
@@ -286,19 +323,23 @@ void* distribucion (void* arg){
     cout << "---------------------------------------------------"<< endl;
 
     //se distribuiran los juguetes mientras la cantidad de juguetes empacados sea mayor a 0 y dependiendo de la cantidad de juguetes que se pidieron
-    if (productosEmpacados > 0 && cantJuguetes >= 10) {
+    
+    //bloqueo mutex
+    pthread_mutex_lock(&candado);
+    
+    if (cantJuguetes%10 == 0 && cantJuguetes >= 10) {
 
         //duerme el hilo por 1 segundo
-        sleep(2);
+        sleep(1);
 
-        //bloqueo mutex
-        pthread_mutex_lock(&candado);
 
         
 
-        pthread_mutex_unlock(&candado);
 
     }
+    
+    //desbloqueo mutex
+    pthread_mutex_unlock(&candado);
 
     return 0;
 }
@@ -315,19 +356,23 @@ int main(){
     cout << "Jueguetes de plastico: " << endl;
     cout<<"---------------------------------------------------"<< endl;
     cin >> taller.juguetesPlastico;
-
     cout << "Jueguetes de madera: " << endl;
     cout<<"---------------------------------------------------"<< endl;
     cin >> taller.juguetesMadera;
-
     cout << "Jueguetes de metal: " << endl;
     cout<<"---------------------------------------------------"<< endl;
     cin >> taller.juguetesMetal;
 
     int cantJuguetes = taller.juguetesPlastico + taller.juguetesMadera + taller.juguetesMetal;
     
+    taller.cantJuguetes = cantJuguetes;
+
     taller.elfos = cantJuguetes/5;
     pthread_t threads[taller.elfos];
+    
+    taller.materiaPlasticoTotal = taller.juguetesPlastico*5;
+    taller.materiaMaderaTotal = taller.juguetesMadera*5;
+    taller.materiaMetalTotal = taller.juguetesMetal*5;
 
     taller.hilosFunMateriaPrimas = taller.elfos * 0.4;
     taller.hilosProduccion = taller.elfos * 0.3;
@@ -371,6 +416,8 @@ int main(){
     for (int i = 0; i < taller.elfos; i++){
         pthread_join(threads[i], NULL);
     }
+
+    cout << "FINISHED" << endl;
     
     return 0;
 }
