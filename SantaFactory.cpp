@@ -91,7 +91,7 @@ void* funMateriaPrima (void* arg){
         while(taller->materiaPlasticoProducida < taller->materiaPlasticoTotal){ //mientras la materia prima de plastico sea menor a la total se seguira aumentando la materia prima
         //se utiliza una variable aparte de la que se toma el material para no generar un bucle infinito de produccion
         
-            sleep(1);
+            usleep(100000);
         
             //bloqueo de semaforo
             sem_wait(&semmateriaPrima);
@@ -106,7 +106,7 @@ void* funMateriaPrima (void* arg){
     else if(id >= hilos && id < hilos*2){ //se trabaja para los hilos desde hilos hasta hilos*2
         while(taller->materiaMaderaProducida < taller->materiaMaderaTotal){
         
-            sleep(1);
+            usleep(100000);
         
             //bloqueo de semaforo
             sem_wait(&semmateriaPrima);
@@ -121,7 +121,7 @@ void* funMateriaPrima (void* arg){
 
         while(taller->materiaMetalProducida < taller->materiaMetalTotal){
         
-            sleep(1);
+            usleep(100000);
         
             //bloqueo de semaforo
             sem_wait(&semmateriaPrima);
@@ -159,7 +159,7 @@ void* produccion (void* arg){
         while(taller->materiaPlastico >= 5 ){
             
             //duerme el hilo por 1 segundos
-            sleep(1);
+            usleep(100000);
 
             //bloqueo de semaforo materia prima
             sem_wait(&semmateriaPrima);
@@ -187,7 +187,7 @@ void* produccion (void* arg){
         while(taller->materiaMadera >= 5 ){
             
             //duerme el hilo por 1 segundos
-            sleep(1);
+            usleep(100000);
 
             //bloqueo de semaforo materia prima
             sem_wait(&semmateriaPrima);
@@ -215,7 +215,7 @@ void* produccion (void* arg){
         while(taller->materiaMetal >= 5 ){
             
             //duerme el hilo por 1 segundos
-            sleep(1);
+            usleep(100000);
 
             //bloqueo de semaforo materia prima
             sem_wait(&semmateriaPrima);
@@ -315,8 +315,8 @@ void* distribucion (void* arg){
     //Importar variables de la struct
     int cantCamiones;
     int cajasPorCamion = 10;
-    int cantJuguetes = taller->cantJuguetes;
-
+    int cantJuguetesTotal = taller->juguetesEmbaladosPlastico + taller->juguetesEmbaladosMadera + taller->juguetesEmbaladosMetal;
+    int cantJuguetes = taller->juguetesEmbaladosPlastico + taller->juguetesEmbaladosMadera + taller->juguetesEmbaladosMetal;
 
     cout << "---------------------------------------------------"<< endl;
     cout << "El sector " << id << " de Elfos empezo a distribuir los juguetes" << endl << "--- A alegrar la Navidad de muchos ninos! ---" << endl;
@@ -327,15 +327,20 @@ void* distribucion (void* arg){
     //bloqueo mutex
     pthread_mutex_lock(&candado);
     
-    if (cantJuguetes%10 == 0 && cantJuguetes >= 10) {
+    if (cantJuguetes >= 10) {
 
-        //duerme el hilo por 1 segundo
-        sleep(1);
+        //duerme el hilo por 0.1 segundo
+        usleep(100000);
+        cantCamiones = cantJuguetes/cajasPorCamion;
+        cantJuguetes = cantJuguetes - cantCamiones*cajasPorCamion;
 
+        cout << cantCamiones << " camiones han sido distribuidos para entregar " << cantJuguetesTotal << " juguetes!" << endl;
+        taller->cantJuguetes = cantJuguetes;
 
-        
-
-
+    } else {
+        usleep(100000);
+        cantCamiones = 0;
+        cout << "No hay suficientes juguetes para distribuir" << endl;
     }
     
     //desbloqueo mutex
