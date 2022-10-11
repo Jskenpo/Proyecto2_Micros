@@ -1,7 +1,7 @@
 /*---------------------------------------
 UNIVERSIDAD DEL VALLE DE GUATEMALA
 CC3056 - Programacion de Microprocesadores
-Realizado por: Angel Castellanos, Javier Aljenadro Ramirez, Jose Pablo Santisteban
+Realizado por: Angel Castellanos, Javier Aljenadro Ramirez, Jose Pablo Santisteban, Mario Cristales
 Proyecto 02 - Santa's Factory // Laboratorio 5
 ---------------------------------------*/
 
