@@ -238,6 +238,8 @@ void* produccion (void* arg){
             
         }
     }
+
+
     return 0;
 }
 
@@ -258,47 +260,90 @@ void* embalaje (void* arg){
     int limiteSuperior = taller->hilosEmbalaje + limiteinferior;
     int hilos = taller->hilosEmbalaje/3; //Se define que cantidad de hilos debe trabajar cada material
 
-    /*
+    
     if(limiteinferior <= id && id < limiteinferior + hilos){
-        while(){
+        while(taller->juguetesFabricadosPlastico > 10){
+            
+            //duerme el hilo por 2 segundos
+            sleep(2);
+
+            //bloqueo de semaforo juguetes Producidos
+            sem_wait(&semJuguetesEmbalados);
+
+            taller->juguetesEmbaladosPlastico = taller->juguetesEmbaladosPlastico + floor(taller->juguetesFabricadosPlastico/10);
+
+            //desbloqueo de semaforo juguetes Producidos
+            sem_post(&semJuguetesEmbalados);
+
+            //bloqueo de semaforo juguetes Embalados
+            sem_wait(&semJuguetesProducidos);
+
+            taller->juguetesFabricadosPlastico = taller->juguetesFabricadosPlastico - floor(taller->juguetesFabricadosPlastico/10);
+
+            //desbloqueo de semaforo juguetes Embalados
+            sem_post(&semJuguetesProducidos);
         
             
         }
         
     }
     else if(limiteinferior + hilos <= id && id < limiteinferior + hilos*2){
-        while(){
-        
+        while(taller->juguetesFabricadosMadera > 10){
+            
+            //duerme el hilo por 2 segundos
+            sleep(2);
 
-        }
-    }
-    else if(limiteinferior + hilos*2 <= id && id < limiteSuperior){
+            //bloqueo de semaforo juguetes Producidos
+            sem_wait(&semJuguetesEmbalados);
 
-        while(){
+            taller->juguetesEmbaladosMadera = taller->juguetesEmbaladosMadera + floor(taller->juguetesFabricadosMadera/10);
+
+            //desbloqueo de semaforo juguetes Producidos
+            sem_post(&semJuguetesEmbalados);
+
+            //bloqueo de semaforo juguetes Embalados
+            sem_wait(&semJuguetesProducidos);
+
+            taller->juguetesFabricadosMadera = taller->juguetesFabricadosMadera - floor(taller->juguetesFabricadosMadera/10);
+
+            //desbloqueo de semaforo juguetes Embalados
+            sem_post(&semJuguetesProducidos);
         
             
         }
-    }*/
-
-    /*
-    //se ejecuta mientras la cantidad de juguetes producidos sea mayor a 10
-    while(juguetesProducidos >= 10){
         
-        //duerme el hilo por 2 segundos
-        sleep(2);
+
+    }
+    else if(limiteinferior + hilos*2 <= id && id < limiteSuperior){
+
+        while(taller-> juguetesFabricadosMetal > 10){
+            
+            //duerme el hilo por 2 segundos
+            sleep(2);
+
+            //bloqueo de semaforo juguetes Producidos
+            sem_wait(&semJuguetesEmbalados);
+
+            taller->juguetesEmbaladosMetal = taller->juguetesEmbaladosMetal + floor(taller->juguetesFabricadosMetal/10);
+
+            //desbloqueo de semaforo juguetes Producidos
+            sem_post(&semJuguetesEmbalados);
+
+            //bloqueo de semaforo juguetes Embalados
+            sem_wait(&semJuguetesProducidos);
+
+            taller->juguetesFabricadosMetal = taller->juguetesFabricadosMetal - floor(taller->juguetesFabricadosMetal/10);
+
+            //desbloqueo de semaforo juguetes Embalados
+            sem_post(&semJuguetesProducidos);
         
-        //hace un lote de empaque de 10 juguetes 
-
-        //bloqueo de semaforo
-        sem_wait(&semJuguetesEmbalados);
+            
+        }
         
-        productosEmpacados = productosEmpacados + floor(juguetesProducidos/10);
-        juguetesProducidos = juguetesProducidos - floor(juguetesProducidos/10)*10;
+    }
 
-        //desbloqueo de semaforo
-        sem_post(&semmateriaPrima);
 
-    }*/
+    
 
     return 0;
     
