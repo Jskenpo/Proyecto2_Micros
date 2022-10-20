@@ -259,7 +259,7 @@ void* embalaje (void* tallerSanta){
                         taller->juguetesEmbaladosPlastico + 1;
                 taller-> cantJuguetesADistribuirPlastico = taller->cantJuguetesADistribuirPlastico + 1;
                 //duerme el hilo por 2 segundos
-                sleep(1);
+                usleep(1000);
 
 
                 taller->juguetesFabricadosPlastico =
@@ -285,7 +285,7 @@ void* embalaje (void* tallerSanta){
                         taller->juguetesEmbaladosMadera + 1;
                 taller-> cantJuguetesADistribuirMadera = taller->cantJuguetesADistribuirMadera + 1;
                 //duerme el hilo por 2 segundos
-                sleep(1);
+                usleep(1000);
 
 
                 taller->juguetesFabricadosMadera =
@@ -313,7 +313,7 @@ void* embalaje (void* tallerSanta){
                 taller->juguetesEmbaladosMetal =
                         taller->juguetesEmbaladosMetal +1 ;
                 taller-> cantJuguetesADistribuirMetal = taller->cantJuguetesADistribuirMetal + 1;
-                sleep(1);
+                usleep(1000);
 
 
                 taller->juguetesFabricadosMetal =
@@ -346,10 +346,6 @@ void* distribucion (void* tallerSanta){
     int cantJuguetesTotal = taller->juguetesPlastico + taller->juguetesMadera + taller->juguetesMetal;
     int cantJuguetes = taller->juguetesEmbaladosPlastico + taller->juguetesEmbaladosMadera + taller->juguetesEmbaladosMetal;
 
-    cout << "---------------------------------------------------"<< endl;
-    cout << "El sector " << id << " de Elfos empezo a distribuir los juguetes" << endl << "--- A alegrar la Navidad de muchos ninos! ---" << endl;
-    cout << "---------------------------------------------------"<< endl;
-
     //se distribuiran los juguetes mientras la cantidad de juguetes empacados sea mayor a 0 y dependiendo de la cantidad de juguetes que se pidieron
     while (taller-> cantJuguetesEnviados < cantJuguetesTotal){
         pthread_mutex_lock(&candado);
@@ -371,11 +367,7 @@ void* distribucion (void* tallerSanta){
         pthread_mutex_unlock(&candado);
         usleep(1000);
 
-        cout <<"error en while"<< endl;
     }
-    cout<< "8==================================================D"<< endl;
-
-
 
     return 0;
 }
@@ -424,34 +416,43 @@ int main(){
         pthread_create(&threads[i], NULL, funMateriaPrima, (void*)&taller);
         usleep(1000);
     }
+    for (int i = 0; i < taller.elfos; i++){
+        pthread_join(threads[i], NULL);
+    }
 
-    //sleep(1);
+    //usleep(1000);
 
     for (int i = taller.hilosFunMateriaPrimas; i < taller.hilosFunMateriaPrimas + taller.hilosProduccion; i++){
         pthread_create(&threads[i], NULL, produccion, (void*)&taller);
         usleep(1000);
     }
+    for (int i = taller.hilosFunMateriaPrimas; i < taller.elfos; i++){
+        pthread_join(threads[i], NULL);
+    }
 
-    //sleep(1);
+    //usleep(1000);
 
     for (int i = taller.hilosFunMateriaPrimas + taller.hilosProduccion; i < taller.hilosFunMateriaPrimas + taller.hilosProduccion + taller.hilosEmbalaje; i++){
         pthread_create(&threads[i], NULL, embalaje, (void*)&taller);
         usleep(1000);
     }
+    for (int i = taller.hilosFunMateriaPrimas + taller.hilosProduccion; i < taller.elfos; i++){
+        pthread_join(threads[i], NULL);
+    }
 
-    sleep(5);
+    usleep(1000);
 
     for (int i = taller.hilosFunMateriaPrimas + taller.hilosProduccion + taller.hilosEmbalaje; i < taller.hilosFunMateriaPrimas + taller.hilosProduccion + taller.hilosEmbalaje + taller.hilosDistribucion; i++){
         pthread_create(&threads[i], NULL, distribucion, (void*)&taller);
         usleep(1000);
     }
+    for (int i = taller.hilosFunMateriaPrimas + taller.hilosProduccion + taller.hilosEmbalaje; i < taller.elfos; i++){
+        pthread_join(threads[i], NULL);
+    }
 
     //sleep(3);
 
     //espera a que los hilos terminen
-    for (int i = 0; i < taller.elfos; i++){
-        pthread_join(threads[i], NULL);
-    }
 
     cout << "FINISHED" << endl;
 
