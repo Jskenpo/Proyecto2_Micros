@@ -58,6 +58,10 @@ struct tallerSanta
     //Distribucion
     int cantCamiones = 0;
     int cantJuguetes = 0;
+    int cantJuguetesADistribuirPlastico = 0;
+    int cantJuguetesADistribuirMadera = 0;
+    int cantJuguetesADistribuirMetal = 0;
+
     int cantJuguetesEnviados = 0;
 };
 
@@ -92,7 +96,7 @@ void* funMateriaPrima (void* tallerSanta){
         while(taller->materiaPlasticoProducida < taller->materiaPlasticoTotal){ //mientras la materia prima de plastico sea menor a la total se seguira aumentando la materia prima
             //se utiliza una variable aparte de la que se toma el material para no generar un bucle infinito de produccion
 
-            usleep(100000);
+            usleep(1000);
 
             //bloqueo de semaforo
             sem_wait(&semmateriaPrima);
@@ -107,7 +111,7 @@ void* funMateriaPrima (void* tallerSanta){
     else if(id >= hilos && id < hilos*2){ //se trabaja para los hilos desde hilos hasta hilos*2
         while(taller->materiaMaderaProducida < taller->materiaMaderaTotal){
 
-            usleep(100000);
+            usleep(1000);
 
             //bloqueo de semaforo
             sem_wait(&semmateriaPrima);
@@ -122,7 +126,7 @@ void* funMateriaPrima (void* tallerSanta){
 
         while(taller->materiaMetalProducida < taller->materiaMetalTotal){
 
-            usleep(100000);
+            usleep(1000);
 
             //bloqueo de semaforo
             sem_wait(&semmateriaPrima);
@@ -165,15 +169,11 @@ void* produccion (void* tallerSanta){
                 //resta de materia prima
                 taller->materiaPlastico = taller->materiaPlastico - 5;
                 //duerme el hilo por 1 segundos
-                usleep(100000);
-                //bloqueo de semaforo juguetes Producidos
-                sem_wait(&semJuguetesProducidos);
+                usleep(1000);
 
                 //creación del juguete
                 taller->juguetesFabricadosPlastico = taller->juguetesFabricadosPlastico + 1;
 
-                //desbloqueo de semaforo juguetes Producidos
-                sem_post(&semJuguetesProducidos);
             }
             //desbloqueo de semaforo materia prima
             sem_post(&semmateriaPrima);
@@ -191,15 +191,11 @@ void* produccion (void* tallerSanta){
                 //resta de materia prima
                 taller->materiaMadera = taller->materiaMadera - 5;
                 //duerme el hilo por 1 segundos
-                usleep(100000);
-                //bloqueo de semaforo juguetes Producidos
-                sem_wait(&semJuguetesProducidos);
+                usleep(1000);
 
                 //creación del juguete
                 taller->juguetesFabricadosMadera = taller->juguetesFabricadosMadera + 1;
 
-                //desbloqueo de semaforo juguetes Producidos
-                sem_post(&semJuguetesProducidos);
             }
             //desbloqueo de semaforo materia prima
             sem_post(&semmateriaPrima);
@@ -216,16 +212,12 @@ void* produccion (void* tallerSanta){
             if (taller->materiaMetal >= 5) {
                 //resta de materia prima
                 taller->materiaMetal = taller->materiaMetal - 5;
-                usleep(100000);
+                usleep(1000);
 
-                //bloqueo de semaforo juguetes Producidos
-                sem_wait(&semJuguetesProducidos);
 
                 //creación del juguete
                 taller->juguetesFabricadosMetal = taller->juguetesFabricadosMetal + 1;
 
-                //desbloqueo de semaforo juguetes Producidos
-                sem_post(&semJuguetesProducidos);
             }
             //desbloqueo de semaforo materia prima
             sem_post(&semmateriaPrima);
@@ -256,7 +248,7 @@ void* embalaje (void* tallerSanta){
 
 
     if(limiteinferior <= id && id < limiteinferior + hilos){
-        while(taller->juguetesEmbaladosPlastico < taller->juguetesPlastico/10){ //mientras la cantidad de juguetes fabricados sea mayor a 10 y la cantidad de juguetes embalados sea menor a la cantidad de juguetes a fabricar
+        while(taller->juguetesEmbaladosPlastico < (taller->juguetesPlastico)/10){ //mientras la cantidad de juguetes fabricados sea mayor a 10 y la cantidad de juguetes embalados sea menor a la cantidad de juguetes a fabricar
 
 
             //bloqueo de semaforo juguetes Producidos
@@ -265,17 +257,14 @@ void* embalaje (void* tallerSanta){
 
                 taller->juguetesEmbaladosPlastico =
                         taller->juguetesEmbaladosPlastico + 1;
+                taller-> cantJuguetesADistribuirPlastico = taller->cantJuguetesADistribuirPlastico + 1;
                 //duerme el hilo por 2 segundos
-                sleep(2);
+                sleep(1);
 
-                //bloqueo de semaforo juguetes Embalados
-                sem_wait(&semJuguetesProducidos);
 
                 taller->juguetesFabricadosPlastico =
                         taller->juguetesFabricadosPlastico - 10;
 
-                //desbloqueo de semaforo juguetes Embalados
-                sem_post(&semJuguetesProducidos);
             }
             //desbloqueo de semaforo juguetes Producidos
             sem_post(&semJuguetesEmbalados);
@@ -285,7 +274,7 @@ void* embalaje (void* tallerSanta){
 
     }
     else if(limiteinferior + hilos <= id && id < limiteinferior + hilos*2){
-        while(taller->juguetesEmbaladosMadera < taller->juguetesMadera/10){ //mientras la cantidad de juguetes fabricados sea mayor a 10 y la cantidad de juguetes embalados sea menor a la cantidad de juguetes a fabricar
+        while(taller->juguetesEmbaladosMadera < (taller->juguetesMadera)/10){ //mientras la cantidad de juguetes fabricados sea mayor a 10 y la cantidad de juguetes embalados sea menor a la cantidad de juguetes a fabricar
 
 
             //bloqueo de semaforo juguetes Producidos
@@ -294,17 +283,14 @@ void* embalaje (void* tallerSanta){
 
                 taller->juguetesEmbaladosMadera =
                         taller->juguetesEmbaladosMadera + 1;
+                taller-> cantJuguetesADistribuirMadera = taller->cantJuguetesADistribuirMadera + 1;
                 //duerme el hilo por 2 segundos
-                sleep(2);
+                sleep(1);
 
-                //bloqueo de semaforo juguetes Embalados
-                sem_wait(&semJuguetesProducidos);
 
                 taller->juguetesFabricadosMadera =
                         taller->juguetesFabricadosMadera - 10;
 
-                //desbloqueo de semaforo juguetes Embalados
-                sem_post(&semJuguetesProducidos);
             }
             //desbloqueo de semaforo juguetes Producidos
             sem_post(&semJuguetesEmbalados);
@@ -316,7 +302,7 @@ void* embalaje (void* tallerSanta){
     }
     else if(limiteinferior + hilos*2 <= id && id < limiteSuperior){
 
-        while(taller->juguetesEmbaladosMetal < taller->juguetesMetal/10){ //mientras la cantidad de juguetes fabricados sea mayor a 10 y la cantidad de juguetes embalados sea menor a la cantidad de juguetes a fabricar
+        while(taller->juguetesEmbaladosMetal < (taller->juguetesMetal)/10){ //mientras la cantidad de juguetes fabricados sea mayor a 10 y la cantidad de juguetes embalados sea menor a la cantidad de juguetes a fabricar
 
 
             //bloqueo de semaforo juguetes Producidos
@@ -326,16 +312,13 @@ void* embalaje (void* tallerSanta){
 
                 taller->juguetesEmbaladosMetal =
                         taller->juguetesEmbaladosMetal +1 ;
-                sleep(2);
+                taller-> cantJuguetesADistribuirMetal = taller->cantJuguetesADistribuirMetal + 1;
+                sleep(1);
 
-                //bloqueo de semaforo juguetes Embalados
-                sem_wait(&semJuguetesProducidos);
 
                 taller->juguetesFabricadosMetal =
                         taller->juguetesFabricadosMetal - 10;
 
-                //desbloqueo de semaforo juguetes Embalados
-                sem_post(&semJuguetesProducidos);
             }
             //desbloqueo de semaforo juguetes Producidos
             sem_post(&semJuguetesEmbalados);
@@ -370,13 +353,13 @@ void* distribucion (void* tallerSanta){
     //se distribuiran los juguetes mientras la cantidad de juguetes empacados sea mayor a 0 y dependiendo de la cantidad de juguetes que se pidieron
     while (taller-> cantJuguetesEnviados <= cantJuguetesTotal){
         pthread_mutex_lock(&candado);
-        if (taller-> juguetesEmbaladosPlastico >= 10 && taller->juguetesEmbaladosMadera >= 10 && taller-> juguetesEmbaladosMetal >= 10){
+        if (taller-> cantJuguetesADistribuirPlastico >= 10 && taller->cantJuguetesADistribuirMadera >= 10 && taller-> cantJuguetesADistribuirMetal >= 10){
 
 
             taller ->cantJuguetesEnviados = taller->cantJuguetesEnviados + 300;
-            taller-> juguetesEmbaladosPlastico = taller-> juguetesEmbaladosPlastico - 10;
-            taller-> juguetesEmbaladosMadera = taller-> juguetesEmbaladosMadera - 10;
-            taller-> juguetesEmbaladosMetal = taller-> juguetesEmbaladosMetal - 10;
+            taller-> cantJuguetesADistribuirPlastico = taller-> cantJuguetesADistribuirPlastico - 10;
+            taller-> cantJuguetesADistribuirMadera = taller-> cantJuguetesADistribuirMadera - 10;
+            taller-> cantJuguetesADistribuirMetal = taller-> cantJuguetesADistribuirMetal - 10;
             taller->cantCamiones = taller->cantCamiones + 1;
 
             cout<< "---------------------------------------------------"<< endl;
@@ -386,7 +369,7 @@ void* distribucion (void* tallerSanta){
         }
 
         pthread_mutex_unlock(&candado);
-        usleep(100000);
+        usleep(1000);
     }
 
 
