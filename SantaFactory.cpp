@@ -370,7 +370,10 @@ void* distribucion (void* tallerSanta){
 
         pthread_mutex_unlock(&candado);
         usleep(1000);
+
+        cout <<"error en while"<< endl;
     }
+    cout<< "8==================================================D"<< endl;
 
 
 
