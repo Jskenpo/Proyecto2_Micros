@@ -376,20 +376,17 @@ void* distribucion (void* tallerSanta){
 int main(){
 
     tallerSanta taller;
+    int cantidadJuguetes = 0;
 
     cout<<"---------------------------------------------------"<< endl;
     cout << "Bienvenido a Santa's Factory S.A" << endl;
     cout << "Ingrese la cantidad de juguetes que desea: " << endl;
     cout<<"---------------------------------------------------"<< endl;
-    cout << "Jueguetes de plastico: " << endl;
-    cout<<"---------------------------------------------------"<< endl;
-    cin >> taller.juguetesPlastico;
-    cout << "Jueguetes de madera: " << endl;
-    cout<<"---------------------------------------------------"<< endl;
-    cin >> taller.juguetesMadera;
-    cout << "Jueguetes de metal: " << endl;
-    cout<<"---------------------------------------------------"<< endl;
-    cin >> taller.juguetesMetal;
+    cin >> cantidadJuguetes;
+
+    taller.juguetesPlastico = cantidadJuguetes;
+    taller.juguetesMadera = cantidadJuguetes;
+    taller.juguetesMetal = cantidadJuguetes;
 
     int cantJuguetes = taller.juguetesPlastico + taller.juguetesMadera + taller.juguetesMetal;
 
